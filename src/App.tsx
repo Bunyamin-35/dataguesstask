@@ -3,7 +3,8 @@ import './App.css';
 import axios from "axios"
 
 function App() {
-  const [continents, setContinents] = useState<any[]>([]);
+  const [countries, setCountries] = useState<any[]>([]);
+  const [filtered, setFiltered] = useState<any>("");
 
   useEffect(() => {
     getCountries();
@@ -12,33 +13,42 @@ function App() {
   const getCountries = async () => {
     const options = {
       method: 'POST',
-      url: 'https://countries.trevorblades.com/',
+      url: 'https://countries.trevorblades.com/graphql',
       headers: {
         'content-type': 'application/json',
       },
       data: {
         query: `{
-          continents {
-            name
+          countries {
             code
+            name
           }
         }`
       }
     };
-    
+
     try {
       const response = await axios.request(options);
       const res = response.data;
-      setContinents(res.data.continents);
+      setCountries(res.data.countries);
       console.log("res:", res);
     } catch (error) {
       console.error(error);
     }
   };
 
+  const filteredList = countries.filter((country) =>
+    country.name.toLowerCase().includes(filtered.toLowerCase())
+  )
+
   return (
     <div className="App">
-      {continents.map((item) => (
+      <input
+        type="text"
+        placeholder="Filter by name..."
+        value={filtered}
+        onChange={(e) => setFiltered(e.target.value)} />
+      {filteredList.map((item) => (
         <div key={item.code}>{item.name}</div>
       ))}
     </div>
