@@ -16,6 +16,12 @@ function App() {
     getCountries();
   }, []);
 
+  useEffect(() => {
+    if (countries.length > 0) {
+      setSelectedCountry(Math.min(9, countries.length - 1));
+    }
+  }, [countries]);
+
   const getCountries = async () => {
     const options = {
       method: 'POST',
@@ -62,12 +68,16 @@ function App() {
       );
 
 
-  const selectItem = (index: number) => {
-    setSelectedCountry(index);
-    // Find the next available color that is not the same as the last selected color
-    const nextColor = COLORS.find((color) => color !== lastSelectedColor) || COLORS[0];
-    setLastSelectedColor(nextColor);
-  };
+      const selectItem = (index: number) => {
+        if (selectedCountry === index) {
+          setSelectedCountry(null);
+          setLastSelectedColor(null);
+        } else {
+          const nextColor = COLORS.find((color) => color !== lastSelectedColor) || COLORS[0];
+          setSelectedCountry(index);
+          setLastSelectedColor(nextColor);
+        }
+      };
 
 
 
@@ -100,8 +110,6 @@ function App() {
         </h2>
         <ul className="flex flex-col gap-3.5 w-full sm:max-w-md m-auto">
           {groupedList.map((item, index) =>
-            // <li key={item.code} className={`p-4 cursor-pointer w-full rounded-md ${selectedCountry === index ? COLORS[index % COLORS.length] : 'bg-gray-100'}`}
-            // onClick={() => setSelectedCountry(index === selectedCountry ? null : index)}>{item.name}</li>
             <li
               key={item.code}
               className={`p-4 cursor-pointer w-full rounded-md ${selectedCountry === index ? (lastSelectedColor || COLORS[0]) : 'bg-gray-100'
