@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import './App.css';
+
 import axios from "axios"
 
 function App() {
   const [countries, setCountries] = useState<any[]>([]);
   const [filtered, setFiltered] = useState<any>("");
-  const [groupOption, setGroupOption] = useState<any>("");
+  const [selectedCountry, setSelectedCountry] = useState<any>("");
+  const [groupOption, setGroupOption] = useState<any>("none");
+  const [isActive, setIsActive] = useState<any>(false);
 
   useEffect(() => {
     getCountries();
@@ -53,14 +55,21 @@ function App() {
     groupOption === 'none'
       ? filteredList
       : filteredList.filter((country) =>
-          country.languages.some((language:any) => language.name === groupOption)
-        );
+        country.languages.some((language: any) => language.name === groupOption)
+      );
 
-  console.log(groupedList);
-  
+  const handleClick = (arg:any) => {
+    if (selectedCountry === arg) {
+      setSelectedCountry('');
+    } else {
+      setSelectedCountry(arg)
+    }
+  }
+
+
 
   return (
-    <div className="App">
+    <div>
       <input
         type="text"
         placeholder="Filter by name..."
@@ -79,7 +88,8 @@ function App() {
         <option value="Arabic">Arabic</option>
       </select>
       {groupedList.map((item) => (
-        <div key={item.code}>{item.name}</div>
+        <div className={`cursor-pointer ${selectedCountry === item.name ? "bg-slate-900" : ""}`} onClick={()=>handleClick(item.name)} key={item.code}>{item.name}</div>
+
       ))}
     </div>
   );
